@@ -1,0 +1,9 @@
+FROM alpine AS builder
+RUN apk add go 
+
+WORKDIR /usr/app
+
+ARG VERSION = "1.0.0"
+
+FROM scrach
+
