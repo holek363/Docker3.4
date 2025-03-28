@@ -1,9 +1,23 @@
-FROM alpine AS builder
-RUN apk add go 
+FROM node:alpine AS builder
 
 WORKDIR /usr/app
 
-ARG VERSION = "1.0.0"
+COPY package.json .
+RUN npm install --only=production
 
-FROM scrach
+COPY index.js .
 
+FROM scratch
+
+WORKDIR /usr/app
+
+COPY --from=builder /usr/local/bin/node /usr/local/bin/node
+COPY --from=builder /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=builder /usr/app /usr/app
+
+ARG VERSION="1.0.0"
+ENV VERSION=$VERSION
+
+EXPOSE 8080
+
+CMD ["/usr/local/bin/node", "index.js"]
